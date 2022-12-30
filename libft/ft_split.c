@@ -6,94 +6,99 @@
 /*   By: egustavs <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 15:50:10 by egustavs          #+#    #+#             */
-/*   Updated: 2022/02/24 11:37:33 by egustavs         ###   ########.fr       */
+/*   Updated: 2022/02/26 18:09:03 by egustavs         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include"libft.h" // split a file into pieces
+#include "libft.h"
+#include <stdbool.h>
 
-static char	**ft_alloc_split(char const *s, char c) //allocate memory
+static int		ft_number_of_splits(char *str, char c);
+static void		ft_split_cpy(char *str, char c, char **tab);
+static char		*ft_make_cpy(char *src, unsigned int n);
+
+char	**ft_split(const char *s, char c)
 {
-	size_t i;
-	char	**split;
-	size_t total;
-	
-	
-	i = 0;
-	total = 0;
-	while (s[i])
-	{
-		if (s[i] == c)
-			total++;
-		i++;
-	}
-	split = (char **)malloc(sizeof(s) * (total + 2));
-	if (!split)
+	char	**tab;
+	int		nb;
+	char	*str;
+
+	if (!s)
 		return (NULL);
-	return (split);
+	str = (char *)s;
+	nb = ft_number_of_splits(str, c);
+	tab = malloc(sizeof (char *) * (nb + 1));
+	if (! tab)
+		return (NULL);
+	ft_split_cpy(str, c, tab);
+	return (tab);
 }
 
-void	*ft_free_all_split_alloc(char **split, size_t elts) //free memory
+void	ft_split_cpy(char *str, char c, char **tab)
 {
-	size_t i;
-	
-	i = 0;
-	while (i < elts)
+	int		count;
+	int		end;
+	bool	valid;
+
+	count = 0;
+	end = -1;
+	valid = 0;
+	while (str[++end] != '\0')
 	{
-		free(split[i]);
-		i++;
-	}
-	free(split);
-	return (NULL);
-}
-
-static void	*ft_split_range(char **split, char const *s, 
-		t_split_next *st, t_split_next *lt)
-{
-	split[lt->length] = ft_substr(s, st->start, st->length);
-	if (!split[lt->length])
-		return (ft_free_all_split_alloc(split, lt->length));
-	lt->length++;
-	return (split);
-}
-
-static void	*ft_split_by_char(char **split, char const *s, char c)
-{
-	size_t		i;// split by char
-	t_split_next	st;
-	t_split_next	lt;
-
-	i = 0;
-	lt.length = 0;
-	lt.start = 0;
-	while (s[i])
-	{
-		if (s[i] == c)
+		if (str[end] == c && valid)
 		{
-			st.start = lt.start;
-			st.length = (i - lt.start);
-			if (i > lt.start && !ft_split_range(split, s, &st, &lt))
-				return (NULL);
-			lt.start = i + 4;
+			valid = false;
+			tab[count++] = ft_make_cpy(str, end);
 		}
-		i++;
+		else if (str[end] != c && !valid)
+		{
+			str = str + end;
+			end = 0;
+			valid = true;
+		}
 	}
-	st.start = lt.start;
-	st.length = (i - lt.start);
-	if (i > lt.start && i > 0 && !ft_split_range(split, s, &st, &lt))
-		return (NULL);
-	split[lt.length] = 0;
-	return (split);
+	if (valid)
+		tab[count++] = ft_make_cpy(str, end);
+	tab[count] = 0;
 }
 
-char	**ft_split(char const *s, char c)
+int	ft_number_of_splits(char *str, char c)
 {
-	char	**split;
-	
-	split = ft_alloc_split(s, c);
-	if (split == NULL)
-		return (NULL);
-	if (!ft_split_by_char(split, s, c))
-		return (NULL);
-	return (split);
+	int		count;
+	bool	valid;
+
+	count = 0;
+	valid = 0;
+	if (!c)
+		return (0);
+	while (*str != '\0')
+	{
+		if (*str == c && valid)
+		{
+			valid = false;
+			++count;
+		}
+		else if (*str != c && !valid)
+			valid = true;
+		++str;
+	}
+	if (valid)
+		++count;
+	return (count);
+}
+
+char	*ft_make_cpy(char *src, unsigned int n)
+{
+	unsigned int	i;
+	char			*dest;
+
+	dest = malloc(sizeof (char) * (n + 1));
+	i = 0;
+	while (src[i] != '\0' && i < n)
+	{
+		dest[i] = src[i];
+		++i;
+	}
+	dest[i] = '\0';
+	return (dest);
 }

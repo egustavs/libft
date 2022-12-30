@@ -6,7 +6,7 @@
 /*   By: egustavs <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/01 16:50:30 by egustavs          #+#    #+#             */
-/*   Updated: 2022/02/24 11:32:18 by egustavs         ###   ########.fr       */
+/*   Updated: 2022/02/25 15:15:15 by egustavs         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 void	ft_striteri(char *s, void (*f)(unsigned int, char*))
 {
 	unsigned int	i;
-	
+
 	i = 0;
 	while (s[i] != '\0')
 	{
